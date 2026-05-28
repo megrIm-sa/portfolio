@@ -61,53 +61,48 @@ async function fetchTelegramNews() {
     `https://rsshub.app/telegram/channel/${channel}`,
     `https://rsshub.rssforever.com/telegram/channel/${channel}`,
   ];
-  const proxyBuilders = [
-    (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-    (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-    (url) => `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(url)}`,
-  ];
 
   let xmlText = "";
   let lastError = "";
 
   for (const source of rssSources) {
-    for (const makeProxyUrl of proxyBuilders) {
-      const requestUrl = makeProxyUrl(source);
-      try {
-        const response = await fetch(requestUrl, {
-          headers: {
-            Accept:
-              "application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8",
-          },
-        });
+    const requestUrl = `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(source)}`;
+    try {
+      const response = await fetch(requestUrl, {
+        headers: {
+          Accept:
+            "application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8",
+        },
+      });
 
-        if (!response.ok) {
-          lastError = `HTTP ${response.status}`;
-          continue;
-        }
-
-        const text = await response.text();
-        if (!text.includes("<item")) {
-          lastError = "RSS не содержит постов";
-          continue;
-        }
-
-        xmlText = text;
-        break;
-      } catch (error) {
-        lastError = error instanceof Error ? error.message : "Ошибка сети";
+      if (!response.ok) {
+        lastError = `HTTP ${response.status}`;
+        continue;
       }
-    }
 
-    if (xmlText) {
+      const text = await response.text();
+      if (!text.includes("<item")) {
+        lastError = "RSS не содержит постов";
+        continue;
+      }
+
+      xmlText = text;
       break;
+    } catch (error) {
+      lastError = error instanceof Error ? error.message : "Ошибка сети";
     }
+  }
+
+  if (xmlText) {
+    return parseRssItems(xmlText);
   }
 
   if (!xmlText) {
     throw new Error(lastError || "Не удалось получить RSS");
   }
+}
 
+function parseRssItems(xmlText) {
   const xml = new DOMParser().parseFromString(xmlText, "text/xml");
   const itemNodes = Array.from(xml.querySelectorAll("item")).slice(0, 6);
 
