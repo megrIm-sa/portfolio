@@ -56,76 +56,6 @@ function cleanHtml(htmlString) {
   return (doc.body.textContent || "").trim();
 }
 
-async function fetchRssViaCodetabs(sources) {
-  let lastError = "Не удалось получить RSS";
-
-  for (const source of sources) {
-    const requestUrl = `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(
-      source
-    )}`;
-    try {
-      const response = await fetch(requestUrl, {
-        headers: {
-          Accept:
-            "application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8",
-        },
-      });
-
-      if (!response.ok) {
-        lastError = `HTTP ${response.status}`;
-        continue;
-      }
-
-      const text = await response.text();
-      if (!text.includes("<item")) {
-        lastError = `RSS не содержит постов: ${source}`;
-        continue;
-      }
-      return text;
-    } catch (error) {
-      lastError = error instanceof Error ? error.message : "Ошибка сети";
-    }
-  }
-
-  throw new Error(lastError);
-}
-
-function parseRssItems(xmlText) {
-  const xml = new DOMParser().parseFromString(xmlText, "text/xml");
-  const itemNodes = Array.from(xml.querySelectorAll("item")).slice(0, 3);
-
-  if (!itemNodes.length) {
-    throw new Error("Лента новостей пуста");
-  }
-
-  return itemNodes.map((node) => {
-    const title = node.querySelector("title")?.textContent?.trim() || "Пост";
-    const link = node.querySelector("link")?.textContent?.trim() || "#";
-    const pubDate = node.querySelector("pubDate")?.textContent?.trim() || "";
-    const descriptionHtml =
-      node.querySelector("description")?.textContent?.trim() || "";
-    const mediaUrl = extractMediaUrl(node, descriptionHtml);
-    const description = cleanHtml(descriptionHtml).slice(0, 180);
-
-    return { title, link, pubDate, description, mediaUrl };
-  });
-}
-
-function extractMediaUrl(itemNode, descriptionHtml) {
-  const mediaNode =
-    itemNode.querySelector("media\\:content") ||
-    itemNode.querySelector("enclosure");
-  const mediaUrlFromTag = mediaNode?.getAttribute("url");
-  if (mediaUrlFromTag) {
-    return mediaUrlFromTag;
-  }
-
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(descriptionHtml, "text/html");
-  const imgSrc = doc.querySelector("img")?.getAttribute("src");
-  return imgSrc || "";
-}
-
 function renderNews(posts, sourceLabel) {
   newsListEl.innerHTML = "";
   if (newsSourceEl) {
@@ -151,39 +81,47 @@ function renderNews(posts, sourceLabel) {
 function renderNewsError() {
   newsListEl.innerHTML = `
     <article class="card news-item">
-      <h3>Не удалось загрузить новости автоматически</h3>
+      <h3>Не удалось загрузить news.json</h3>
       <p>
-        Откройте канал напрямую:
-        <a href="https://t.me/megrIm_games" target="_blank" rel="noreferrer noopener">t.me/megrIm_games</a>
+        Проверьте выполнение workflow в GitHub Actions и наличие файла
+        <code>news.json</code> в корне репозитория.
       </p>
     </article>
   `;
 }
 
-async function fetchNews() {
-  const telegramRssSources = [
-    "https://rsshub.rssforever.com/telegram/channel/megrIm_games",
-    "https://rsshub.app/telegram/channel/megrIm_games",
-  ];
-  const xRssSources = [
-    "https://rsshub.rssforever.com/twitter/user/megrImGames",
-    "https://rsshub.app/twitter/user/megrImGames",
-    "https://nitter.poast.org/megrImGames/rss",
-  ];
-
-  try {
-    const xmlText = await fetchRssViaCodetabs(telegramRssSources);
-    return { posts: parseRssItems(xmlText), sourceLabel: "Источник: Telegram" };
-  } catch (telegramError) {
-    try {
-      const xmlText = await fetchRssViaCodetabs(xRssSources);
-      return { posts: parseRssItems(xmlText), sourceLabel: "Источник: X (Twitter)" };
-    } catch {
-      throw telegramError;
-    }
+async function fetchNewsFromJson() {
+  const response = await fetch(`./news.json?v=${Date.now()}`, {
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
   }
+
+  const payload = await response.json();
+  const posts = Array.isArray(payload.posts) ? payload.posts : [];
+  if (!posts.length) {
+    throw new Error("Нет постов в news.json");
+  }
+
+  return {
+    posts: posts.slice(0, 3).map((post) => ({
+      title: post.title || "Пост",
+      link: post.link || "#",
+      pubDate: post.pubDate || "",
+      description: cleanHtml(post.description || "").slice(0, 180),
+      mediaUrl: post.mediaUrl || "",
+    })),
+    sourceLabel: payload.sourceLabel || "Источник: Новости",
+  };
 }
 
-fetchNews()
+fetchNewsFromJson()
   .then(({ posts, sourceLabel }) => renderNews(posts, sourceLabel))
-  .catch(renderNewsError);
+  .catch((error) => {
+    if (newsSourceEl) {
+      newsSourceEl.textContent = "Источник: недоступен";
+    }
+    console.error("news.json error:", error);
+    renderNewsError();
+  });
