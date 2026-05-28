@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>megrIm games - Портфолио</title>
+    <meta
+      name="description"
+      content="Портфолио разработчика игр: обо мне, проекты и новости из Telegram."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <nav class="container nav">
+        <a class="logo" href="#top">megrIm games</a>
+        <ul class="nav-links">
+          <li><a href="#about">About me</a></li>
+          <li><a href="#projects">Проекты</a></li>
+          <li><a href="#news">Новости</a></li>
+        </ul>
+      </nav>
+      <div class="container hero-content" id="top">
+        <p class="kicker">Game Developer</p>
+        <h1>Создаю атмосферные игры с характером</h1>
+        <p class="hero-text">
+          Здесь собраны мои проекты и свежие новости разработки.
+        </p>
+        <a class="btn" href="#projects">Смотреть проекты</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="section container" id="about">
+        <h2>About me</h2>
+        <div class="card about">
+          <p>
+            Привет! Я инди-разработчик игр. Занимаюсь полным циклом:
+            геймдизайн, программирование, прототипирование и полировка.
+          </p>
+          <p>
+            Люблю делать игры с сильной атмосферой, понятными механиками и
+            запоминающимся визуальным стилем.
+          </p>
+        </div>
+      </section>
+
+      <section class="section container" id="projects">
+        <h2>Проекты</h2>
+        <div class="projects-grid" id="projects-list"></div>
+      </section>
+
+      <section class="section container" id="news">
+        <div class="news-header">
+          <h2>Новости</h2>
+          <a
+            class="news-link"
+            href="https://t.me/megrIm_games"
+            target="_blank"
+            rel="noreferrer noopener"
+            >Открыть канал</a
+          >
+        </div>
+        <div class="news-list" id="news-list" aria-live="polite">
+          <p class="muted">Загрузка новостей из Telegram...</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-content">
+        <p>© <span id="year"></span> megrIm games</p>
+        <p>
+          Сделано для GitHub Pages · Источник новостей:
+          <a href="https://t.me/megrIm_games" target="_blank" rel="noreferrer noopener"
+            >t.me/megrIm_games</a
+          >
+        </p>
+      </div>
+    </footer>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
