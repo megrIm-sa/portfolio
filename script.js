@@ -18,6 +18,7 @@ const projects = [
 
 const projectsListEl = document.getElementById("projects-list");
 const newsListEl = document.getElementById("news-list");
+const newsSourceEl = document.getElementById("news-source");
 const yearEl = document.getElementById("year");
 
 yearEl.textContent = String(new Date().getFullYear());
@@ -55,18 +56,13 @@ function cleanHtml(htmlString) {
   return (doc.body.textContent || "").trim();
 }
 
-async function fetchTelegramNews() {
-  const channel = "megrIm_games";
-  const rssSources = [
-    `https://rsshub.app/telegram/channel/${channel}`,
-    `https://rsshub.rssforever.com/telegram/channel/${channel}`,
-  ];
+async function fetchRssViaCodetabs(sources) {
+  let lastError = "Не удалось получить RSS";
 
-  let xmlText = "";
-  let lastError = "";
-
-  for (const source of rssSources) {
-    const requestUrl = `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(source)}`;
+  for (const source of sources) {
+    const requestUrl = `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(
+      source
+    )}`;
     try {
       const response = await fetch(requestUrl, {
         headers: {
@@ -82,29 +78,21 @@ async function fetchTelegramNews() {
 
       const text = await response.text();
       if (!text.includes("<item")) {
-        lastError = "RSS не содержит постов";
+        lastError = `RSS не содержит постов: ${source}`;
         continue;
       }
-
-      xmlText = text;
-      break;
+      return text;
     } catch (error) {
       lastError = error instanceof Error ? error.message : "Ошибка сети";
     }
   }
 
-  if (xmlText) {
-    return parseRssItems(xmlText);
-  }
-
-  if (!xmlText) {
-    throw new Error(lastError || "Не удалось получить RSS");
-  }
+  throw new Error(lastError);
 }
 
 function parseRssItems(xmlText) {
   const xml = new DOMParser().parseFromString(xmlText, "text/xml");
-  const itemNodes = Array.from(xml.querySelectorAll("item")).slice(0, 6);
+  const itemNodes = Array.from(xml.querySelectorAll("item")).slice(0, 3);
 
   if (!itemNodes.length) {
     throw new Error("Лента новостей пуста");
@@ -114,23 +102,46 @@ function parseRssItems(xmlText) {
     const title = node.querySelector("title")?.textContent?.trim() || "Пост";
     const link = node.querySelector("link")?.textContent?.trim() || "#";
     const pubDate = node.querySelector("pubDate")?.textContent?.trim() || "";
-    const description = cleanHtml(
-      node.querySelector("description")?.textContent?.trim() || ""
-    ).slice(0, 180);
+    const descriptionHtml =
+      node.querySelector("description")?.textContent?.trim() || "";
+    const mediaUrl = extractMediaUrl(node, descriptionHtml);
+    const description = cleanHtml(descriptionHtml).slice(0, 180);
 
-    return { title, link, pubDate, description };
+    return { title, link, pubDate, description, mediaUrl };
   });
 }
 
-function renderNews(posts) {
+function extractMediaUrl(itemNode, descriptionHtml) {
+  const mediaNode =
+    itemNode.querySelector("media\\:content") ||
+    itemNode.querySelector("enclosure");
+  const mediaUrlFromTag = mediaNode?.getAttribute("url");
+  if (mediaUrlFromTag) {
+    return mediaUrlFromTag;
+  }
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(descriptionHtml, "text/html");
+  const imgSrc = doc.querySelector("img")?.getAttribute("src");
+  return imgSrc || "";
+}
+
+function renderNews(posts, sourceLabel) {
   newsListEl.innerHTML = "";
+  if (newsSourceEl) {
+    newsSourceEl.textContent = sourceLabel;
+  }
 
   posts.forEach((post) => {
     const card = document.createElement("article");
     card.className = "card news-item";
+    const media = post.mediaUrl
+      ? `<img class="news-media" src="${post.mediaUrl}" alt="${post.title}" loading="lazy" />`
+      : "";
     card.innerHTML = `
       <h3><a href="${post.link}" target="_blank" rel="noreferrer noopener">${post.title}</a></h3>
       <div class="news-meta">${formatDate(post.pubDate)}</div>
+      ${media}
       <p>${post.description || "Откройте пост, чтобы узнать подробности."}</p>
     `;
     newsListEl.appendChild(card);
@@ -149,4 +160,30 @@ function renderNewsError() {
   `;
 }
 
-fetchTelegramNews().then(renderNews).catch(renderNewsError);
+async function fetchNews() {
+  const telegramRssSources = [
+    "https://rsshub.rssforever.com/telegram/channel/megrIm_games",
+    "https://rsshub.app/telegram/channel/megrIm_games",
+  ];
+  const xRssSources = [
+    "https://rsshub.rssforever.com/twitter/user/megrImGames",
+    "https://rsshub.app/twitter/user/megrImGames",
+    "https://nitter.poast.org/megrImGames/rss",
+  ];
+
+  try {
+    const xmlText = await fetchRssViaCodetabs(telegramRssSources);
+    return { posts: parseRssItems(xmlText), sourceLabel: "Источник: Telegram" };
+  } catch (telegramError) {
+    try {
+      const xmlText = await fetchRssViaCodetabs(xRssSources);
+      return { posts: parseRssItems(xmlText), sourceLabel: "Источник: X (Twitter)" };
+    } catch {
+      throw telegramError;
+    }
+  }
+}
+
+fetchNews()
+  .then(({ posts, sourceLabel }) => renderNews(posts, sourceLabel))
+  .catch(renderNewsError);
