@@ -140,15 +140,111 @@ h2 {
   padding: 1rem;
 }
 
+.project-carousel {
+  position: relative;
+  margin-bottom: 0.8rem;
+}
+
+.project-track {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #111722;
+  overflow: hidden;
+}
+
+.project-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.project-slide.is-active {
+  opacity: 1;
+}
+
+.project-placeholder {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  color: var(--muted);
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.project-nav {
+  position: absolute;
+  top: calc(50% - 18px);
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(11, 15, 22, 0.72);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.project-nav.prev {
+  left: 0.5rem;
+}
+
+.project-nav.next {
+  right: 0.5rem;
+}
+
+.project-dots {
+  position: absolute;
+  left: 50%;
+  bottom: 0.5rem;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.35rem;
+}
+
+.project-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+}
+
+.project-dot.is-active {
+  background: #fff;
+}
+
 .project-title {
   margin: 0 0 0.45rem;
   font-size: 1.1rem;
+}
+
+.project-title a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.project-title a:hover {
+  color: var(--accent);
 }
 
 .project-desc {
   margin: 0;
   color: var(--muted);
   font-size: 0.95rem;
+}
+
+.project-link {
+  display: inline-block;
+  margin-top: 0.7rem;
+  color: var(--accent);
+  text-decoration: none;
 }
 
 .project-tags {

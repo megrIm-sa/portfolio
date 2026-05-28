@@ -43,3 +43,14 @@
   2. Fallback на X/Twitter (`rsshub...` и `nitter`)
 
 Если обновление прошло успешно, workflow автоматически коммитит новый `news.json`.
+
+## Скриншоты проектов
+
+Для каждой игры есть отдельная папка:
+
+- `assets/projects/death-warrant/`
+- `assets/projects/symbionts/`
+- `assets/projects/hack-the-hacker/`
+
+Карусель автоматически ищет изображения с именами `1..6` и расширениями:
+`.jpg`, `.jpeg`, `.png`, `.webp` (например `1.jpg`, `2.png`, `3.webp`).
