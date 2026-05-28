@@ -57,22 +57,57 @@ function cleanHtml(htmlString) {
 
 async function fetchTelegramNews() {
   const channel = "megrIm_games";
-  const rssUrl = `https://rsshub.app/telegram/channel/${channel}`;
-  const proxiedUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(
-    rssUrl
-  )}`;
+  const rssSources = [
+    `https://rsshub.app/telegram/channel/${channel}`,
+    `https://rsshub.rssforever.com/telegram/channel/${channel}`,
+  ];
+  const proxyBuilders = [
+    (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    (url) => `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(url)}`,
+  ];
 
-  const response = await fetch(proxiedUrl, {
-    headers: {
-      Accept: "application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8",
-    },
-  });
+  let xmlText = "";
+  let lastError = "";
 
-  if (!response.ok) {
-    throw new Error(`Ошибка загрузки новостей: ${response.status}`);
+  for (const source of rssSources) {
+    for (const makeProxyUrl of proxyBuilders) {
+      const requestUrl = makeProxyUrl(source);
+      try {
+        const response = await fetch(requestUrl, {
+          headers: {
+            Accept:
+              "application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8",
+          },
+        });
+
+        if (!response.ok) {
+          lastError = `HTTP ${response.status}`;
+          continue;
+        }
+
+        const text = await response.text();
+        if (!text.includes("<item")) {
+          lastError = "RSS не содержит постов";
+          continue;
+        }
+
+        xmlText = text;
+        break;
+      } catch (error) {
+        lastError = error instanceof Error ? error.message : "Ошибка сети";
+      }
+    }
+
+    if (xmlText) {
+      break;
+    }
   }
 
-  const xmlText = await response.text();
+  if (!xmlText) {
+    throw new Error(lastError || "Не удалось получить RSS");
+  }
+
   const xml = new DOMParser().parseFromString(xmlText, "text/xml");
   const itemNodes = Array.from(xml.querySelectorAll("item")).slice(0, 6);
 
