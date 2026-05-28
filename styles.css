@@ -4,8 +4,8 @@
   --card: #1b2230;
   --text: #e8edf4;
   --muted: #a9b2c1;
-  --accent: #6fa8ff;
-  --accent-strong: #4c8eff;
+  --accent: #ff5c5c;
+  --accent-strong: #e33d3d;
   --border: #2b3445;
   --shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
@@ -35,7 +35,7 @@ body {
 .hero {
   border-bottom: 1px solid var(--border);
   background:
-    radial-gradient(circle at 80% 20%, rgba(111, 168, 255, 0.2), transparent 35%),
+    radial-gradient(circle at 80% 20%, rgba(255, 92, 92, 0.2), transparent 35%),
     var(--bg);
 }
 
