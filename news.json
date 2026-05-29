@@ -1,13 +1,20 @@
 {
   "sourceLabel": "Источник: Telegram",
-  "updatedAt": "2026-05-29T13:45:19.449983Z",
+  "updatedAt": "2026-05-29T20:24:54.222913Z",
   "posts": [
+    {
+      "title": "🎬 Crypts and Creeps: devlog 5",
+      "link": "https://t.me/megrIm_games/37",
+      "pubDate": "2026-05-29T14:06:59+00:00",
+      "description": "Crypts and Creeps: devlog 5 Закончил систему разрушаемости конечностей для персонажей. Также добавил рэгдолл при смерти. #crypts_and_creeps #devlog",
+      "mediaUrl": ""
+    },
     {
       "title": "🎬 Death Warrant — короткий нарративный детектив, где каждое решение имеет цену. Собирай...",
       "link": "https://t.me/megrIm_games/36",
       "pubDate": "2026-05-04T21:16:02+00:00",
       "description": "Death Warrant — короткий нарративный детектив, где каждое решение имеет цену. Собирай улики, допрашивай подозреваемых, выбирай: следовать системе или сломать её. Мегаполис. 2047 го",
-      "mediaUrl": "https://cdn4.telesco.pe/file/u7ykSgLk7H4aWudTPHqoTXRA8gW3bfUL1_Yo8KHuzJhALL5MIRBRMIbKDePgqMbJbH09EdLF9fliHYFiwYy-5_ICfi0juiLxm9d5DCOln5B2WZR_We6M0LsnAh2Vgyic8l8JlJpqXxqDG8P2OJ8PqvZlfIGOYxChNrpUdbCo_Ypa0zmY3Nc27vFlRpVUVPMPEP-Vw-4kJqoxEl9jjlSvgAHOMN2E4c4dtjhNAj9X6nnkf2fJk1PyZY6j5UJslX6Zvtvp_6OwPOzyPb2yNCOzm9kbxgcAi7RWCOcC3yJsP0rKOlji_Jd7GNLYIruiHfNxgISJdlmhT66XunxKwS0x1g"
+      "mediaUrl": "https://cdn4.telesco.pe/file/rlK6G5bHJa2zoTcjp67dtkYIWOBqvfjQSSCLbFZKFGwEBRUGSPUJiW9GgUUd95SrI8YJJq0E_Qga21RRsuqCSor_PpUDId61cC8m_1qmc-7fcz6rqF3WvMjsJUKuoap6Z_eNCRboXw44YiAZC1-6D5t9o9bYFvYU045PNGnN9A0yis12umL1NxbAqDNbVueAiGALSbx0ZBZIv2dzUBXgHmGVnSa1FrkyxdRO88EDGOHitbbVb7LyZfRVBqjau6NFob_V9YOwjcF6cin9fzyG4PCvAUdSAQCCH2-x-SI0US6MvbLeu0GVdIZzYH24UB9QUzxQ_DL_yoRqOHB71tCB3g"
     },
     {
       "title": "↩️🎬",
@@ -15,13 +22,6 @@
       "pubDate": "2026-04-29T18:07:58+00:00",
       "description": "megrIm games : Photo",
       "mediaUrl": ""
-    },
-    {
-      "title": "🎬🖼 Crypts and Creeps: devlog 4",
-      "link": "https://t.me/megrIm_games/33",
-      "pubDate": "2026-04-29T14:20:58+00:00",
-      "description": "Crypts and Creeps: devlog 4 Работал над интеграцией анимации и разрушаемых конечностей врагов. Для этого написал плагин для движка, который позволяет разделять воксельную 3D-модель",
-      "mediaUrl": "https://cdn4.telesco.pe/file/oLFzvVDMpXH4Hb67WArroKi1TmbLMzmXYy4YbWZXzMxze8ZhNdVFD3AWBu3iDwmPgL3mXAf2IgpiqeCupMILJvDT_o1jNPck_SK6J6EWODAjCugxTKaMizrLDoCac-7i3r0EPQnIz0eFkp2-ZLW76t6I9Jrnd12ZKZ_Vf8JcksjTJEBcN0hRwSAya3oCzUCuT8kcjrIjVWpp5tzRmmdc3yA50NAu9Nz-fqR7RmPnyfA8I0aMo0EBIQBwahB-gpSzUybLAAU5hwhmc0V4nR0zDFL7_4XthdkM4Ql9Ujqbxrzd59on3ul26LVKqKNYgsTXOSHoT5uA3DwUgnT82YJo4A.jpg"
     }
   ]
 }
